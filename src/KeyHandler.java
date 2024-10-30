@@ -13,6 +13,7 @@ public class KeyHandler implements KeyListener {
         int code = e.getKeyCode();
         if(code==KeyEvent.VK_W){
             upPressed = true;
+
         }
         else if(code==KeyEvent.VK_A){
             leftPressed=true;

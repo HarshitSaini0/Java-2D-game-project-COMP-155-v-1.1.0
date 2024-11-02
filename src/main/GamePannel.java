@@ -1,31 +1,43 @@
+package main;
+
+import entity.Player;
+import tile.TileManager;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class GamePannel extends JPanel implements Runnable {
-    //
+    // Screen settings
     final int nanoSecondsOneInSecond=1000000000;
 
     final int originalTileSize = 16;
     final int scale = 3;
 
-    final int tileSize = originalTileSize * scale;
-    final int maxScreenCol = 16;
-    final int maxScreenRow = 12;
-    final int screenWidth = tileSize * maxScreenCol;
-    final int screenHeight = tileSize * maxScreenRow;
+    public final int tileSize = originalTileSize * scale;
+    public final int maxScreenCol = 16;
+    public final int maxScreenRow = 12;
+    public final int screenWidth = tileSize * maxScreenCol;
+    public final int screenHeight = tileSize * maxScreenRow;
+
+    //WORLD SETTINGS
+    public final int maxWorldCol = 50;
+    public final int maxWorldRow = 50;
+    public final int worldWidth = tileSize * maxWorldCol;
+    public final int worldHeight = tileSize * maxWorldRow;
+
+
     //  FPS
-    int FPS = 30;
+    public int FPS = 30;
+
+    TileManager tileManager = new TileManager(this);
 
 
     KeyHandler keyHandler = new KeyHandler();
 
     Thread gameThread ;
 
+    public Player player = new Player(this,keyHandler);
 
-    //Player things
-    int playerX=100;
-    int playerY=100;
-    int playerSpeed = 48;
 
     public GamePannel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -121,35 +133,17 @@ public class GamePannel extends JPanel implements Runnable {
     }
 
     public void update() throws InterruptedException {
-        if(keyHandler.upPressed){
-            playerY-=playerSpeed;
-            gameThread.sleep(100);
-
-        }
-        else if(keyHandler.downPressed){
-            playerY+=playerSpeed;
-            gameThread.sleep(100);
-
-
-        }
-        if(keyHandler.leftPressed){
-            playerX-=playerSpeed;
-            gameThread.sleep(100);
-
-        }
-        if(keyHandler.rightPressed){
-            playerX+=playerSpeed;
-            gameThread.sleep(100);
-
-        }
+        player.update();
 
     }
     public void paintComponent(Graphics graphics){
         super.paintComponent(graphics);
 
         Graphics2D g2 = (Graphics2D)graphics;//Like we do with (char)1 -> simple parse
-        g2.setColor(Color.WHITE);
-        g2.fillRect(playerX,playerY,tileSize,tileSize);
+
+        tileManager.draw(g2);
+
+        player.draw(g2);
 
         g2.dispose();
 

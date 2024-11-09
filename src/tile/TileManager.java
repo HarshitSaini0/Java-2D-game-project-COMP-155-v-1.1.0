@@ -8,11 +8,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Objects;
 
 public class TileManager {
     GamePannel gamePannel ;
-    Tile [] tile;
-    int mapTileNum[][];
+    public Tile [] tile;
+    public int mapTileNum[][];
 
     public TileManager(GamePannel gamePannel){
         this.gamePannel = gamePannel;
@@ -37,11 +38,26 @@ public class TileManager {
                     "sand"
             };
 
+
+            String [] tilesWithCollision = {
+                    "wall",
+                    "water",
+                    "tree"
+            };
+
             for(int i = 0;i<tiles.length;i++){
                 this.tile[i] = new Tile();
                 String tilePath = "/tiles/"+tiles[i]+".png";
-                this.tile[i].image = ImageIO.read(getClass().getResourceAsStream(tilePath));
+                this.tile[i].image = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream(tilePath)));
+                for( String block : tilesWithCollision){
+                    if(block.equals(tiles[i])){
+                        this.tile[i].collision = true;
+                        break;
+                    }
+                }
             }
+
+
         }
         catch (IOException e){
             e.printStackTrace();
@@ -52,6 +68,7 @@ public class TileManager {
     public void loadMap(String mapFilePath){
         try {
             InputStream is = getClass().getResourceAsStream(mapFilePath);
+            assert is != null;
             BufferedReader br = new BufferedReader((new InputStreamReader(is)));
 
             int col = 0;
@@ -96,6 +113,9 @@ public class TileManager {
             int worldY = worldRow * gamePannel.tileSize;
             int screenX = worldX - gamePannel.player.worldX + gamePannel.player.screenX;
             int screenY = worldY - gamePannel.player.worldY + gamePannel.player.screenY;
+
+
+
 
             if(
                     worldX + gamePannel.tileSize > gamePannel.player.worldX - gamePannel.player.screenX &&

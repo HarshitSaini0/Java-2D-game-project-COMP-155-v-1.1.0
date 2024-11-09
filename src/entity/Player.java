@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Objects;
 
 public class Player extends Entity{
     GamePannel gamePannel;
@@ -20,30 +21,36 @@ public class Player extends Entity{
         this.gamePannel = gamePannel;
         this.keyHandler = keyHandler;
 
-        this.screenX = gamePannel.screenWidth/2 - (gamePannel.tileSize/2);
+        this.screenX = gamePannel.screenWidth /2 - (gamePannel.tileSize/2);
         this.screenY = gamePannel.screenHeight/2 - (gamePannel.tileSize/2);
+
+        this.solidArea = new Rectangle(10,16,28,28);//x = 8, y = 16,width = 32, height = 32
+
+        this.collisionOn = true;
 
         this.setDefaultValues();
         this.getPlayerImage();
+
+
     }
 
     public void setDefaultValues(){
         this.worldX = gamePannel.tileSize * 23;
         this.worldY = gamePannel.tileSize * 21;
-        this.speed = 4;
+        this.speed = 6;
         this.direction = "down";
     }
 
     public void getPlayerImage(){
         try {
-        up1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_up_1.png"));
-        up2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_up_2.png"));
-        down1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_down_1.png"));
-        down2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_down_2.png"));
-        left1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_left_1.png"));
-        left2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_left_2.png"));
-        right1 = ImageIO.read(getClass().getResourceAsStream("/player/boy_right_1.png"));
-        right2 = ImageIO.read(getClass().getResourceAsStream("/player/boy_right_2.png"));
+        up1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/boy_up_1.png")));
+        up2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/boy_up_2.png")));
+        down1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/boy_down_1.png")));
+        down2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/boy_down_2.png")));
+        left1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/boy_left_1.png")));
+        left2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/boy_left_2.png")));
+        right1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/boy_right_1.png")));
+        right2 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("/player/boy_right_2.png")));
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -51,30 +58,46 @@ public class Player extends Entity{
 
     public void update(){
 
-
-
         if(
-                keyHandler.downPressed == true ||
-                keyHandler.leftPressed == true ||
-                keyHandler.rightPressed == true ||
-                keyHandler.upPressed == true
+                keyHandler.downPressed ||
+                keyHandler.leftPressed ||
+                keyHandler.rightPressed ||
+                keyHandler.upPressed
         ) {
             if (keyHandler.upPressed) {
                 this.direction = "up";
-                this.worldY -= this.speed;
-            } else if (keyHandler.downPressed) {
+            }
+            else if (keyHandler.downPressed) {
                 this.direction = "down";
-                this.worldY += this.speed;
             }
-            if (keyHandler.leftPressed) {
+           else if (keyHandler.leftPressed) {
                 this.direction = "left";
-                this.worldX -= this.speed;
             }
-            if (keyHandler.rightPressed) {
+            else if (keyHandler.rightPressed) {
                 this.direction = "right";
-                this.worldX += this.speed;
             }
 
+            // CHECK TILE COLLISION
+            this.collisionOn = false;
+            gamePannel.collisionChecker.checkTile(this);
+
+            //IF COLLISION IS FALSE SO PLAYER CAN MOVE
+            if (!collisionOn){
+                switch (this.direction){
+                    case "up":
+                        this.worldY -= this.speed;
+                        break;
+                    case "down":
+                        this.worldY += this.speed;
+                        break;
+                    case "left":
+                        this.worldX -= this.speed;
+                        break;
+                    case "right":
+                        this.worldX += this.speed;
+                        break;
+                }
+            }
 
             spriteCounter++;
 

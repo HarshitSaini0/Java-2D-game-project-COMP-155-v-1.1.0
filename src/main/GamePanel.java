@@ -7,7 +7,7 @@ import tile.TileManager;
 import javax.swing.*;
 import java.awt.*;
 
-public class GamePannel extends JPanel implements Runnable {
+public class GamePanel extends JPanel implements Runnable {
     // Screen settings
     final int nanoSecondsOneInSecond=1000000000;
 
@@ -41,7 +41,7 @@ public class GamePannel extends JPanel implements Runnable {
 
 
 
-    public GamePannel() {
+    public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.BLACK);
         this.setDoubleBuffered(true);
@@ -59,50 +59,7 @@ public class GamePannel extends JPanel implements Runnable {
         gameThread.start();
     }
 
-    @Override
-//    public void run(){
-//        double drawInterval = (double) nanoSecondsOneInSecond /FPS; //0.0167secs
-//        double nextDrawTime = System.nanoTime()+drawInterval;
-//        while(gameThread!=null){
-//
-//            update();
-//            repaint();
-//
-//            try {
-//                double remainingTime = nextDrawTime - System.nanoTime();
-//                remainingTime = remainingTime/nanoSecondsOneInSecond;
-//                if(remainingTime<0){
-//                    remainingTime=0;
-//                }
-//                Thread.sleep((long) remainingTime);
-//                nextDrawTime+=drawInterval;
-//
-//            }catch (InterruptedException e){
-//                e.printStackTrace();
-//            }
-//        }
-//    }
 
-
-//    public void run(){
-//        double drawInterval = nanoSecondsOneInSecond/FPS;
-//        double delta = 0;
-//        long lastTime = System.nanoTime();
-//        long currentTime;
-//        long timer = 0;
-//        int drawCount = 0;
-//        while(gameThread!=null){
-//            currentTime = System.nanoTime();
-//            delta += (currentTime-lastTime)/delta;
-//            lastTime = currentTime;
-//            if (delta >= 1){
-//                update();
-//                repaint();
-//                delta--;
-//
-//            }
-//        }
-//    }
 
 
     public void run() {
@@ -128,13 +85,6 @@ public class GamePannel extends JPanel implements Runnable {
                 repaint();
                 delta--;
             }
-
-            // Optional: Sleep to limit CPU usage (simple frame limiting)
-//            try {
-//                Thread.sleep(1); // or calculate the appropriate sleep time
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
         }
     }
 

@@ -1,30 +1,35 @@
 package entity;
 
-import main.GamePannel;
+import main.GamePanel;
 import main.KeyHandler;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Objects;
 
 public class Player extends Entity{
-    GamePannel gamePannel;
+    GamePanel gamePanel;
     KeyHandler keyHandler;
+
+    int numberOfKeys = 5;
 
 
     public final int screenX;
     public final int screenY;
 
-    public Player(GamePannel gamePannel,KeyHandler keyHandler){
-        this.gamePannel = gamePannel;
+    public Player(GamePanel gamePanel, KeyHandler keyHandler){
+        this.gamePanel = gamePanel;
         this.keyHandler = keyHandler;
 
-        this.screenX = gamePannel.screenWidth /2 - (gamePannel.tileSize/2);
-        this.screenY = gamePannel.screenHeight/2 - (gamePannel.tileSize/2);
+        this.screenX = gamePanel.screenWidth /2 - (gamePanel.tileSize/2);
+        this.screenY = gamePanel.screenHeight/2 - (gamePanel.tileSize/2);
 
         this.solidArea = new Rectangle(10,16,28,28);//x = 8, y = 16,width = 32, height = 32
+        this.solidAreaDefaultX = this.solidArea.x;
+        this.solidAreaDefaultY = this.solidArea.y;
 
         this.collisionOn = true;
 
@@ -35,8 +40,8 @@ public class Player extends Entity{
     }
 
     public void setDefaultValues(){
-        this.worldX = gamePannel.tileSize * 23;
-        this.worldY = gamePannel.tileSize * 21;
+        this.worldX = gamePanel.tileSize * 23;
+        this.worldY = gamePanel.tileSize * 21;
         this.speed = 6;
         this.direction = "down";
     }
@@ -79,8 +84,11 @@ public class Player extends Entity{
 
             // CHECK TILE COLLISION
             this.collisionOn = false;
-            gamePannel.collisionChecker.checkTile(this);
+            gamePanel.collisionChecker.checkTile(this);
 
+            // CHECK OBJECT COLLISION
+            int objectIndex = gamePanel.collisionChecker.checkObject(this,true);
+            pickUpObject(objectIndex);
             //IF COLLISION IS FALSE SO PLAYER CAN MOVE
             if (!collisionOn){
                 switch (this.direction){
@@ -101,7 +109,7 @@ public class Player extends Entity{
 
             spriteCounter++;
 
-            if (spriteCounter > (gamePannel.FPS / 10) * 2) {
+            if (spriteCounter > (gamePanel.FPS / 10) * 2) {
                 if (this.spriteNum == 1) {
                     this.spriteNum = 2;
                 } else if (this.spriteNum == 2) {
@@ -111,9 +119,45 @@ public class Player extends Entity{
             }
         }
     }
+
+    public  void pickUpObject(int i){
+        if ( i != 999){
+            String objectName = gamePanel.obj[i].name;
+            switch (objectName){
+                case "key":
+                    this.numberOfKeys++;
+                    gamePanel.obj[i]=null;
+                    break;
+
+                case "door":
+                    if(numberOfKeys > 0){
+                        gamePanel.obj[i]=null;
+                        this.numberOfKeys--;
+                    }else{
+                        System.out.println("no key");
+                    }
+                    break;
+                case "chest":
+                    JLabel label = new JLabel("YOU WON");
+                    JPanel panel = new JPanel();
+                    JFrame winnerFrame = new JFrame("YOU WON");
+                    panel.add(label);
+                    winnerFrame.add(panel);
+                    winnerFrame.setSize(600,100);
+                    winnerFrame.setVisible(true);
+                    this.speed = 0;
+                    break;
+
+            }
+        }
+
+    }
+
+
+
     public void draw(Graphics2D g2){
 //        g2.setColor(Color.WHITE);
-//        g2.fillRect(x,y, gamePannel.tileSize,gamePannel.tileSize);
+//        g2.fillRect(x,y, gamePanel.tileSize,gamePanel.tileSize);
         BufferedImage image = null;
         switch (this.direction){
             case "up":
@@ -151,21 +195,7 @@ public class Player extends Entity{
                     break;
                 }
         }
-        g2.drawImage(image,screenX,screenY,gamePannel.tileSize,gamePannel.tileSize,null);
+        g2.drawImage(image,screenX,screenY, gamePanel.tileSize, gamePanel.tileSize,null);
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
